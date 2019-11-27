@@ -22,3 +22,19 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.container{
+    padding-left:10rem;
+    padding-right:10rem;
+}
+
+.search-results {
+    padding-left: 6rem;
+    padding-right:6rem;
+}
+.result-text{
+    padding-left:6rem;
+}
+.res-link{
+    color:red;
+}

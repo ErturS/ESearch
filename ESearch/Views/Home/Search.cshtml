@@ -1,0 +1,43 @@
+﻿
+@using ESearch.BLL.Entities
+@model IEnumerable<SearchResult>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container">
+        @using (Html.BeginForm("Search", "Home", FormMethod.Post, new { @class = "form-inline", role = "form" }))
+        {
+        <div class="form-group">
+            <label class="text-primary">ESearch</label>
+            <input class="form-control" type="text" placeholder="Search" name="query" value="@ViewBag.Query">
+            <input type="submit" value="search" class="btn btn-default"/> 
+        </div>
+        }
+        <hr />
+        <p class="result-text">Результаты поиска:</p>
+        <div class="search-results">
+            @foreach (var item in Model)
+            {
+                <div class="search-results-item">
+                    <h2 class="text-primary"><a href="@item.Link">@item.Title</a></h2>
+                    <a class="res-link" href="@item.Link">@item.Link</a>
+                    <p>@item.Description</p>
+                </div>
+            }
+        </div>
+
+    </div>
+    
+</body>
+</html>
