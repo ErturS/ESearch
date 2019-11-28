@@ -11,5 +11,6 @@ namespace ESearch.BLL.Interfaces
     public interface ISearchService:IService
     {
         List<SearchResult> Search(string query);
+        Task<List<SearchResult>> SearchAsync(string query);
     }
 }

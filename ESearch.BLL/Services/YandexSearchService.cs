@@ -54,6 +54,46 @@ namespace ESearch.BLL.Services
                 return results;
         }
 
+        public Task<List<SearchResult>> SearchAsync(string query)
+        {
+            var tcs = new TaskCompletionSource<List<SearchResult>>();
+            Task.Run(() =>
+            {
+                List<SearchResult> results = new List<SearchResult>();
+                if (query != String.Empty)
+                {
+                    try
+                    {
+                        HttpWebResponse response = Request(query);
+                        XmlReader xmlReader = XmlReader.Create(response.GetResponseStream());
+                        XDocument xmlResponse = XDocument.Load(xmlReader);
+
+                        var groupElements = from gr in xmlResponse.Elements().
+                                         Elements("response").
+                                         Elements("results").
+                                         Elements("grouping").
+                                         Elements("group")
+                                            select gr;
+                        foreach (var group in groupElements)
+                        {
+                            results.Add(new SearchResult
+                            {
+                                Title = GetValue(group, "title"),
+                                Link = GetValue(group, "url"),
+                                Description = GetValue(group, "headline"),
+                                ServiceName = "Yandex"
+                            });
+                        }
+                        tcs.SetResult(results);
+                    } catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                }
+            });
+            return tcs.Task;
+        }
+
         private HttpWebResponse Request(string query)
         {
             string key = ConfigurationManager.AppSettings["YandexSearchApiKey"]; 

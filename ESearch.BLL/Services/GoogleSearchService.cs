@@ -41,5 +41,45 @@ namespace ESearch.BLL.Services
                 }
                 return searchResults;
         }
+
+        public Task<List<SearchResult>> SearchAsync(string query)
+        {
+            var tcs = new TaskCompletionSource<List<SearchResult>>();
+            Task.Run(() =>
+            {
+                List<SearchResult> searchResults = new List<SearchResult>();
+                if (query != String.Empty)
+                {
+                    try
+                    {
+                        string searchApiKey = ConfigurationManager.AppSettings["GoogleSearchApiKey"];
+                        string searchEngineId = ConfigurationManager.AppSettings["GoogleSearchEngineId"];
+                        var customSearchService = new CustomsearchService(new BaseClientService.Initializer { ApiKey = searchApiKey });
+                        var listRequest = customSearchService.Cse.List(query);
+                        listRequest.Cx = searchEngineId;
+
+                        listRequest.Start = 1;
+                        listRequest.Num = 10;
+                        var result = listRequest.ExecuteAsync().Result;
+                        foreach (var item in result.Items)
+                        {
+                            searchResults.Add(new SearchResult
+                            {
+                                Title = item.Title,
+                                Link = item.Link,
+                                Description = item.Snippet,
+                                ServiceName = "Google"
+                            });
+                        }
+                        tcs.SetResult(searchResults);
+                    }
+                    catch(Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                }
+            });
+            return tcs.Task;
+        }
     }
 }
