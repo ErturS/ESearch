@@ -16,9 +16,9 @@ namespace ESearch.BLL.Services
     {
         private readonly IGenericRepository<QueryResult> _searchResultRepo;
 
-        public SearchResultService(IUnitOfWork unitOfWork):base(unitOfWork)
+        public SearchResultService(IUnitOfWork unitOfWork, IGenericRepository<QueryResult> genericRepo) :base(unitOfWork)
         {
-            _searchResultRepo = UnitOfWork.GetRepository<QueryResult>();
+            _searchResultRepo = genericRepo;
         }
 
 
@@ -40,7 +40,7 @@ namespace ESearch.BLL.Services
                 }
                 
                 _searchResultRepo.AddRange(queryResults);
-                UnitOfWork.SaveChanges();
+                _searchResultRepo.Save();
                 return ExecuteResult.Success();
             });
         }

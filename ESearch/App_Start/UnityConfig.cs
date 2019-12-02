@@ -1,7 +1,9 @@
 ﻿using ESearch.BLL.Interfaces;
 using ESearch.BLL.ServiceHost;
 using ESearch.BLL.Services;
+using ESearch.Controllers;
 using ESearch.DAL.Domain;
+using ESearch.DAL.Entities;
 using ESearch.DAL.Repositories;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ namespace ESearch.App_Start
     public class UnityConfig
     {
         public static IServiceHost ServiceHost { get; set; }
+        public static UnityContainer Container;
         static UnityConfig()
         {
             RegisterComponents();
@@ -25,10 +28,10 @@ namespace ESearch.App_Start
 
         public static void RegisterComponents()
         {
-            var container = new UnityContainer();
-            ConfigDI(container);
-            DependencyResolver.SetResolver(new UnityDependencyResolver(container));
-            ServiceHost = container.Resolve<IServiceHost>();
+            Container = new UnityContainer();
+            ConfigDI(Container);
+            DependencyResolver.SetResolver(new UnityDependencyResolver(Container));
+            ServiceHost = Container.Resolve<IServiceHost>();
         }
         private static void ConfigDI(UnityContainer container)
         {
@@ -39,7 +42,9 @@ namespace ESearch.App_Start
                      .RegisterType<IBingSearchService, BingSearchService>()
                      .RegisterType<ISearchResultService, SearchResultService>()
                      .RegisterType<IUnitOfWork, UnitOfWork>()
+                     .RegisterType<IGenericRepository<QueryResult>,GenericRepository<QueryResult>>()
                      .RegisterType<IController, Controller>();
+
         }
     }
 }
